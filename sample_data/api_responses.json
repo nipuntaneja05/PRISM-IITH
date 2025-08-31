@@ -1,0 +1,83 @@
+{
+  "risk_score_response": {
+    "user_id": "USR00001",
+    "credit_risk_score": 680,
+    "default_probability": 0.125,
+    "risk_category": "medium",
+    "entropy_scores": {
+      "movement_entropy": 0.45,
+      "transaction_entropy": 0.52,
+      "social_entropy": 0.38,
+      "temporal_entropy": 0.41,
+      "composite_score": 0.44
+    },
+    "factors": {
+      "positive": [
+        "Stable movement patterns",
+        "Regular transaction frequency",
+        "Low-risk social connections"
+      ],
+      "negative": [
+        "High transaction entropy",
+        "Occasional unusual timing"
+      ]
+    },
+    "last_updated": "2025-08-30T15:59:35.668877",
+    "processing_time_ms": 45
+  },
+  "social_risk_response": {
+    "user_id": "USR00001",
+    "direct_connections": 8,
+    "cascade_risk_score": 0.23,
+    "high_risk_connections": 1,
+    "risk_propagation": {
+      "1_hop": 0.15,
+      "2_hop": 0.08,
+      "3_hop": 0.03
+    },
+    "connection_analysis": [
+      {
+        "connected_user": "USR00045",
+        "connection_strength": 0.85,
+        "risk_correlation": 0.67,
+        "impact": "medium"
+      }
+    ]
+  },
+  "entropy_calculation_response": {
+    "user_id": "USR00001",
+    "calculation_period": "90_days",
+    "entropy_breakdown": {
+      "movement": {
+        "value": 0.45,
+        "interpretation": "Moderately predictable movement",
+        "key_locations": 3,
+        "regularity_score": 0.78
+      },
+      "transaction": {
+        "value": 0.52,
+        "interpretation": "Variable spending patterns",
+        "categories_used": 8,
+        "temporal_consistency": 0.65
+      },
+      "social": {
+        "value": 0.38,
+        "interpretation": "Stable social network",
+        "active_connections": 6,
+        "interaction_regularity": 0.82
+      },
+      "temporal": {
+        "value": 0.41,
+        "interpretation": "Consistent daily routines",
+        "peak_hours": [
+          9,
+          13,
+          19
+        ],
+        "weekend_variation": 0.15
+      }
+    },
+    "composite_score": 0.44,
+    "stability_rating": "MODERATE"
+  }
+}
