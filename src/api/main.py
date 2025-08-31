@@ -28,7 +28,12 @@ import src.ml.entropy_engine
 import src.ml.social_risk_gnn
 import src.ml.ghost_detector
 import src.ml.ensemble_model
+# Add this at the top after imports
+import logging
 
+# Configure logging for Render
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 # Import with full paths for API use
 from src.ml.ensemble_model import PRISMEnsembleModel
 
@@ -51,6 +56,41 @@ db_params = {
     "port": int(os.getenv("DB_PORT", 5432)),
 }
 
+# def load_trained_model() -> bool:
+#     """Load the trained ensemble model"""
+#     global trained_model
+    
+#     model_path = project_root / "models" / "prism_ensemble_model.pkl"
+    
+#     if not model_path.exists():
+#         print(f"Model file not found: {model_path}")
+#         return False
+    
+#     try:
+#         print(f"Loading model from {model_path}...")
+#         with open(model_path, "rb") as f:
+#             data = pickle.load(f)
+        
+#         # Handle both dict and object loading
+#         if isinstance(data, dict):
+#             print("Reconstructing model from dict...")
+#             trained_model = PRISMEnsembleModel()
+#             for key, value in data.items():
+#                 setattr(trained_model, key, value)
+#         else:
+#             trained_model = data
+        
+#         fitted = getattr(trained_model, "is_fitted", False)
+#         print(f"Model loaded successfully! Fitted: {fitted}")
+#         return True
+        
+#     except Exception as e:
+#         print(f"Error loading model: {e}")
+#         import traceback
+#         traceback.print_exc()
+#         return False
+
+# Update the model loading function
 def load_trained_model() -> bool:
     """Load the trained ensemble model"""
     global trained_model
@@ -58,17 +98,17 @@ def load_trained_model() -> bool:
     model_path = project_root / "models" / "prism_ensemble_model.pkl"
     
     if not model_path.exists():
-        print(f"Model file not found: {model_path}")
+        logger.error(f"Model file not found: {model_path}")
         return False
     
     try:
-        print(f"Loading model from {model_path}...")
+        logger.info(f"Loading model from {model_path}...")
         with open(model_path, "rb") as f:
             data = pickle.load(f)
         
         # Handle both dict and object loading
         if isinstance(data, dict):
-            print("Reconstructing model from dict...")
+            logger.info("Reconstructing model from dict...")
             trained_model = PRISMEnsembleModel()
             for key, value in data.items():
                 setattr(trained_model, key, value)
@@ -76,11 +116,11 @@ def load_trained_model() -> bool:
             trained_model = data
         
         fitted = getattr(trained_model, "is_fitted", False)
-        print(f"Model loaded successfully! Fitted: {fitted}")
+        logger.info(f"Model loaded successfully! Fitted: {fitted}")
         return True
         
     except Exception as e:
-        print(f"Error loading model: {e}")
+        logger.error(f"Error loading model: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -154,6 +194,29 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# Add health check for database
+@app.get("/api/v1/db-health")
+async def database_health_check():
+    """Check database connectivity"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1;")
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        
+        return {
+            "database_status": "healthy",
+            "connection_test": "passed",
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        return {
+            "database_status": "unhealthy",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
 
 # Basic endpoints
 @app.get("/")
